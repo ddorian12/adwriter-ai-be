@@ -16,7 +16,7 @@ namespace AdWriter_Application.Services
         public AdWriterService(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
-            _apiKey = config["OpenAI:ApiKey"]
+            _apiKey = config["OpenAI:Key"]
                 ?? throw new ArgumentNullException("OpenAI:ApiKey missing");
         }
 
