@@ -1,7 +1,8 @@
 ﻿// AdWriter_AI/Controllers/AdWriterController.cs
-using AdWriter_Application.Interfaces;
+using AdWriter_Application.Interfaces.Services;
 using AdWriter_Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AdWriter_AI.Controllers
 {
@@ -19,6 +20,10 @@ namespace AdWriter_AI.Controllers
         [HttpPost("generate")]
         public async Task<IActionResult> Generate([FromBody] AdRequest request)
         {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            if (userId == 0)
+                return Unauthorized("Invalid user.");
+
             if (string.IsNullOrWhiteSpace(request.Description))
                 return BadRequest("Description is required.");
 
@@ -28,16 +33,6 @@ namespace AdWriter_AI.Controllers
             var result = await _service.GenerateAdContentAsync(request.Description, request.Language);
             return Ok(new { result });
         }
-
-
-        [HttpPost("generate-2")]
-        public async Task<ActionResult<AdContentResponse>> Generate2([FromBody] AdRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(request.Description))
-                return BadRequest("Description is required.");
-
-            var result = await _service.GenerateAdContentAsync2(request.Description, request.Language);
-            return Ok(result);
-        }
+       
     }
 }
